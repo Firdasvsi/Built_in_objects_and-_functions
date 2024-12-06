@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup and Promo Code Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .popup {
+            width: 350px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+            font-size: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup .popup-header {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .popup img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .popup h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .popup p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .popup button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .popup button:hover {
+            background-color: #45a049;
+        }
+
+        .promocode-form {
+            width: 300px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: none;
+        }
+
+        .promocode-form input {
+            padding: 10px;
+            width: 70%;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .promocode-form button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .promocode-form button:hover {
+            background-color: #45a049;
+        }
+
+        .promocode-message {
+            margin-top: 20px;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <div id="popup" class="popup">
+        <div class="popup-header">
+            <img src="image/example.webp" alt="Gift Icon">
+            <h3 id="gift-title"></h3>
+            <p id="gift-description"></p>
+            <button onclick="showPromocodeForm()">Great!</button>
+        </div>
+    </div>
+
+
+    <div class="promocode-form" id="promocode-form">
+        <h3>Введите Промо-код</h3>
+        <input type="text" id="promocode" placeholder="Введите Промо-код">
+        <button onclick="checkPromocode()">Применить</button>
+        <div id="promocode-message" class="promocode-message"></div>
+    </div>
+
+    <script>
+        // Массив объектов с промокодами и подарками
+        const promocodeArr = [
+            { promocode: 'PROM10', gift: "Скидка 10%" },
+            { promocode: 'PROM50', gift: "Скидка 50%" },
+            { promocode: 'GIFT', gift: "Подарок в корзине" }
+        ];
+    
+        // Вспомогательная функция для работы с куки
+        function getCookie(name) {
+            const cookieArr = document.cookie.split('; ');
+            for (let i = 0; i < cookieArr.length; i++) {
+                const cookiePair = cookieArr[i].split('=');
+                if (name === cookiePair[0]) {
+                    return cookiePair[1];
+                }
+            }
+            return null;
+        }
+    
+        function setCookie(name, value) {
+            document.cookie = `${name}=${value}; path=/; max-age=31536000`; 
+        }
+    
+        // Функция для показа формы ввода промокода
+        function showPromocodeForm() {
+            const popup = document.getElementById('popup');
+            const promocodeForm = document.getElementById('promocode-form');
+            popup.style.display = 'none';  
+            promocodeForm.style.display = 'block';  
+        }
+    
+        // Функция для показа всплывающего окна
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            const giftArr = [
+                {
+                    title: "Скидка 20% на первую покупку в нашем магазине!",
+                    description: "Получите скидку на свою первую покупку в нашем магазине."
+                },
+                {
+                    title: "Скидка 10% на все товары!",
+                    description: "Используйте эту скидку на все товары в нашем ассортименте."
+                },
+                {
+                    title: "Подарок при регистрации!",
+                    description: "Получите подарок при первой регистрации на нашем сайте."
+                }
+             
+            ];
+    
+            const randomIndex = Math.floor(Math.random() * giftArr.length);
+            const gift = giftArr[randomIndex];
+            document.getElementById('gift-title').textContent = gift.title;
+            document.getElementById('gift-description').textContent = gift.description;
+            popup.style.display = 'block';
+        }
+    
+        // Функция для проверки промокода
+        function checkPromocode() {
+            const inputPromocode = document.getElementById('promocode').value.trim().toUpperCase();
+            const messageElement = document.getElementById('promocode-message');
+    
+            // Проверяем введённый промокод
+            const matchedPromocode = promocodeArr.find(item => item.promocode === inputPromocode);
+    
+            if (matchedPromocode) {
+                // Если промокод найден
+                setCookie('promocode', matchedPromocode.promocode); 
+                showPromocodeMessage(matchedPromocode.gift); 
+            } else {
+                // Если промокод неверный
+                messageElement.textContent = 'Неверный промокод. Попробуйте снова.';
+                messageElement.style.color = 'red';
+            }
+        }
+    
+        // Функция для отображения сообщения о подарке
+        function showPromocodeMessage(gift) {
+            const messageElement = document.getElementById('promocode-message');
+            messageElement.textContent = `Поздравляем! Вы получаете: ${gift}`;
+            messageElement.style.color = '#4CAF50';
+        }
+    
+        setTimeout(showPopup, 3000);
+    </script>
+
+</body>
+</html>
